@@ -1,3 +1,4 @@
+const User = require('../models/user.model');
 
 
 const getUsers = (request, response) => {
@@ -7,6 +8,21 @@ const getUsers = (request, response) => {
   });
 }
 
+const createUser = async (request, response) => {
+
+  const { name, email, password } = request.body;
+
+  const user = new User(request.body);
+
+  await user.save();
+
+  response.json({
+    ok: true,
+    user
+  });
+}
+
 module.exports = {
-  getUsers
+  getUsers,
+  createUser
 }

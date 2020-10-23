@@ -11,6 +11,9 @@ const app = express();
 // Configure CORDS
 app.use(cors());
 
+// Reading and parse from body
+app.use(express.json());
+
 // Database
 dbConnection();
 
