@@ -1,4 +1,5 @@
 const { response } = require('express');
+const bcrypt = require('bcryptjs');
 const User = require('../models/user.model');
 
 
@@ -14,7 +15,7 @@ const getUsers = async(request, res) => {
 
 const createUser = async (request, res = response) => {
 
-  const { name, email, password } = request.body;
+  const { email, password } = request.body;
 
   const existEmail = await User.findOne({email});
 
@@ -29,6 +30,11 @@ const createUser = async (request, res = response) => {
 
     const user = new User(request.body);
 
+    // Encrypt password
+    const salt = bcrypt.genSaltSync();
+    user.password = bcrypt.hashSync(password, salt);
+
+    // Save user in Mongo Atlas
     await user.save();
 
     res.json({
