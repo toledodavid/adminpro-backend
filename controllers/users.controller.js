@@ -51,7 +51,58 @@ const createUser = async (request, res = response) => {
 
 }
 
+const updateUser = async (request, res = response) => {
+
+  // TODO: Validate token and confirm if the user is correct
+
+  const uid = request.params.uid;
+
+  try {
+
+    const userDB = await User.findById(uid);
+
+    if (!userDB) {
+      return res.status(404).json({
+        ok: false,
+        message: 'Any user with that uid'
+      });
+    }
+
+    const fields = request.body;
+
+    if (userDB.email === fields.email) {
+      delete fields.email;
+    } else {
+      const emailExist = await User.findOne({email: fields.email});
+      if (emailExist) {
+        return res.status(400).json({
+          ok: false,
+          message: 'This email already exist'
+        });
+      }
+    }
+
+    delete fields.password;
+
+    const userUpdated = await User.findByIdAndUpdate(uid, fields, {new: true});
+
+    res.json({
+      ok: true,
+      user: userUpdated
+    });
+    
+  } catch (error) {
+    console.log(error);
+    res.status(500).json({
+      ok: false,
+      message: 'Unexpected error'
+    });
+  }
+
+}
+
 module.exports = {
   getUsers,
-  createUser
+  createUser,
+  updateUser
 }
