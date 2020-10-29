@@ -99,8 +99,40 @@ const updateUser = async (request, res = response) => {
 
 }
 
+const deleteUser = async(request, res = response) => {
+
+  const uid = request.params.uid;
+
+  try {
+
+    const userDB = await User.findById(uid);
+
+    if (!userDB) {
+      return res.status(404).json({
+        ok: false,
+        message: 'Any user with that uid'
+      });
+    }
+
+    await User.findByIdAndDelete(uid);
+
+    res.json({
+      ok: true,
+      message: 'User deleted'
+    });
+
+  } catch (error) {
+    res.status(500).json({
+      ok: false,
+      message: 'Unexpected error'
+    });
+  }
+
+}
+
 module.exports = {
   getUsers,
   createUser,
-  updateUser
+  updateUser,
+  deleteUser
 }
