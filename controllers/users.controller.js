@@ -1,6 +1,7 @@
 const { response } = require('express');
 const bcrypt = require('bcryptjs');
 const User = require('../models/user.model');
+const { generateJWT } = require('../helpers/jwt');
 
 
 const getUsers = async(request, res) => {
@@ -37,9 +38,13 @@ const createUser = async (request, res = response) => {
     // Save user in Mongo Atlas
     await user.save();
 
+    // Generate TOKEN - JWT (json web token)
+    const token = await generateJWT(user._id);
+
     res.json({
       ok: true,
-      user
+      user,
+      token
     });
     
   } catch (error) {
