@@ -1,10 +1,13 @@
 const { response } = require('express');
 const Hospital = require('../models/hospital.model');
 
-const getHospitals = (request, res = response) => {
+const getHospitals = async(request, res = response) => {
+
+  const hospitals = await Hospital.find().populate('user', 'name img');
+
   res.json({
     ok: true,
-    message: 'getHospitals'
+    hospitals
   });
 }
 
