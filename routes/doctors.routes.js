@@ -14,7 +14,11 @@ const router = Router();
 router.get('/', getDoctors);
 
 router.post('/',
-  [],
+  [
+    validateJWT,
+    check('name', 'Doctor name is required').not().isEmpty(),
+    validateFields
+  ],
   createDoctor
 );
 

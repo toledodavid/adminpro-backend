@@ -1,4 +1,5 @@
 const { response } = require('express');
+const Doctor = require('../models/doctors.model');
 
 const getDoctors = (request, res = response) => {
   res.json({
@@ -7,11 +8,29 @@ const getDoctors = (request, res = response) => {
   });
 }
 
-const createDoctor = (request, res = response) => {
-  res.json({
-    ok: true,
-    message: 'createDoctor'
-  });
+const createDoctor = async(request, res = response) => {
+
+  const uid = request.uid;
+  
+  const doctor = new Doctor({...request.body, user: uid});
+
+  try {
+
+    const doctorDB = await doctor.save();
+
+    res.json({
+      ok: true,
+      doctor: doctorDB
+    });
+    
+  } catch (error) {
+    console.log(error);
+    res.status(500).json({
+      ok: false,
+      message: 'Unexpected error'
+    });
+  }
+
 }
 
 const updateDoctor = (request, res = response) => {
