@@ -57,13 +57,33 @@ const googleSignIn = async(request, res = response) => {
 
     const {name, email, picture} = await googleVerify(googleToken);
 
+    const userDB = await User.findOne({email});
+    let user;
+
+    if (!userDB) {
+      user = new User({
+        name,
+        email,
+        password: '@@@',
+        img: picture,
+        google: true
+      });
+    } else {
+
+      user = userDB;
+      user.google =  true;
+
+    }
+
+    // Save in Mongo Atlas DB
+    await user.save();
+
+    // Generate TOKEN - JWT (json web token)
+    const token = await generateJWT(user._id);
+
     res.json({
       ok: true,
-      message: 'Google SignIn',
-      googleToken,
-      name,
-      email,
-      picture
+      token
     });
     
   } catch (error) {
