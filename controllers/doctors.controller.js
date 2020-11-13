@@ -36,11 +36,43 @@ const createDoctor = async(request, res = response) => {
 
 }
 
-const updateDoctor = (request, res = response) => {
-  res.json({
-    ok: true,
-    message: 'updateDoctor'
-  });
+const updateDoctor = async(request, res = response) => {
+  
+  const idDoctor = request.params.id;
+  const uid = request.uid;
+
+  try {
+
+    const doctorDB = await Doctor.findById(idDoctor);
+
+    if (!doctorDB) {
+      return res.status(404).json({
+        ok: false,
+        message: 'Any Doctor found with that Id'
+      });
+    }
+
+
+    const doctorChanges = {
+      ...request.body,
+      user: uid
+    }
+
+    const doctorUpdated = await Doctor.findByIdAndUpdate(idDoctor, doctorChanges, {new: true});
+    
+    res.json({
+      ok: true,
+      doctor: doctorUpdated
+    });
+
+  } catch (error) {
+    console.log(error);
+    res.status(500).json({
+      ok: false,
+      message: 'Unexpected error'
+    });
+  }
+
 }
 
 const deleteDoctor = (request, res = response) => {
