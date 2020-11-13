@@ -33,6 +33,6 @@ router.put('/:id',
   updateDoctor
 );
 
-router.delete('/:id', deleteDoctor);
+router.delete('/:id', validateJWT, deleteDoctor);
 
 module.exports = router;
