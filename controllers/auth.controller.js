@@ -98,13 +98,26 @@ const googleSignIn = async(request, res = response) => {
 const renewToken = async(request, res = response) => {
   const uid = request.uid;
 
-  // Generate TOKEN - JWT (json web token)
-  const token = await generateJWT(uid);
+  try {
+    // Generate TOKEN - JWT (json web token)
+    const token = await generateJWT(uid);
 
-  res.json({
-    ok: true,
-    token
-  });
+    // Get info user by uid 
+    const userDB = await User.findById(uid);
+
+    res.json({
+      ok: true,
+      token,
+      user: userDB
+    });
+
+  } catch (error) {
+    res.status(401).json({
+      ok: false,
+      message: 'Unexpected error with token'
+    });
+  }
+
 }
 
 
