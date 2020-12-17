@@ -11,6 +11,29 @@ const getDoctors = async(request, res = response) => {
   });
 }
 
+const getDoctorById = async(request, res = response) => {
+
+  const IdDoctor = request.params.id;
+
+  try {
+
+    const doctor = await Doctor.findById(IdDoctor).populate('user', 'name img').populate('hospital', 'name img');
+
+    res.json({
+      ok: true,
+      doctor
+    });
+    
+  } catch (error) {
+    console.log(error);
+    res.status(500).json({
+      ok: false,
+      message: 'Unexpected error'
+    });
+  }
+
+}
+
 const createDoctor = async(request, res = response) => {
 
   const uid = request.uid;
@@ -110,6 +133,7 @@ const deleteDoctor = async(request, res = response) => {
 
 module.exports = {
   getDoctors,
+  getDoctorById,
   createDoctor,
   updateDoctor,
   deleteDoctor
