@@ -1,5 +1,6 @@
 const { response } = require('express');
 const jwt = require('jsonwebtoken');
+const User = require('../models/user.model');
 
 
 const validateJWT = (request, res = response, next) => {
@@ -31,6 +32,41 @@ const validateJWT = (request, res = response, next) => {
 }
 
 
+const validateADMIN_ROLE = async(request, res = response, next) => {
+  
+  const uid = request.uid;
+  
+  try {
+
+    const userDB = await User.findById(uid);
+
+    if (!userDB) {
+      return res.status(404).json({
+        ok: false,
+        message: 'User does not exist'
+      });
+    }
+
+    if (userDB.role !== 'ADMIN_ROLE') {
+      return res.status(403).json({
+        ok: false,
+        message: 'Denied access'
+      });
+    }
+    
+    next();
+    
+  } catch (error) {
+    console.log(error);
+    res.status(500).json({
+      ok: false,
+      message: 'Unexpected error'
+    });
+  }
+}
+
+
 module.exports = {
-  validateJWT
+  validateJWT,
+  validateADMIN_ROLE
 }
